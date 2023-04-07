@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Controller,
   Get,
@@ -6,12 +7,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-@Controller('user')
+@Controller('api/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -21,27 +24,32 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
+  findAll(@Query('take', new ParseIntPipe()) take: number) {
     return this.userService.users({
-      where: {
-        id: 1,
-      },
-      take: 10,
+      take,
     });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.userService.user({ id, email: 'test' });
+  findOne(@Param('id', new ParseIntPipe()) id: number) {
+    return this.userService.user({ id });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  update(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.update({
+      data: updateUserDto,
+      where: {
+        id,
+      },
+    });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  remove(@Param('id', new ParseIntPipe()) id: number) {
+    return this.userService.remove({ id });
   }
 }
