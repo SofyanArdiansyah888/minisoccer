@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 @Injectable()
@@ -43,15 +43,19 @@ export class UserService {
     where: Prisma.UserWhereUniqueInput;
     data: Prisma.UserUpdateInput;
   }): Promise<User> {
-    const {where,data} = params;
-    return this.prisma.user.update({
-      where,
-      data: {
-        ...data,
-        password: bcrypt.hashSync(data.password.toString(), 10),
-      }
-      
-    });
+    const { where, data } = params;
+    if (data.password) {
+      const password = bcrypt.hashSync(data.password.toString(), 10);
+      return this.prisma.user.update({
+        where,
+        data: {
+          ...data,
+          password,
+        },
+      });
+    } else {
+      return this.prisma.user.update({ where, data });
+    }
   }
 
   remove(where: Prisma.UserWhereUniqueInput): Promise<User> {
