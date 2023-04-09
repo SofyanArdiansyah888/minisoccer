@@ -1,12 +1,10 @@
 /* eslint-disable prettier/prettier */
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from '../user.controller';
-import { UserService } from '../user.service';
-import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '@prisma/client';
 import { PrismaModule } from '../../prisma/prisma.module';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import { take } from 'rxjs';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UserController } from '../user.controller';
+import { UserService } from '../user.service';
 
 const mockUser = {
   id: 1,
